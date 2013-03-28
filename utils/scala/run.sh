@@ -9,8 +9,8 @@
 # p prints the output AFTER wrting the file
 
 # Constants/Options
-IN="input" # input file name
-OUT="output" # output file name
+IN=".in" # input file extensioon
+OUT=".out" # output file extension
 PACKAGE_PREFIX="com" # package com.abdulradi.codejam.blah.blah
 # End Constants/Options # Rest is the logic
  
@@ -24,10 +24,16 @@ if [[ $* == *c* ]]; then
 else
     echo "Not compiling, Hope the old classes still exists."     
 fi
-rm -f $OUT
-cat $IN | scala $package.$class > $OUT
+
+for f in *$IN; do 
+    outFileName=$(echo $f | awk -F$IN '{print $1}')$OUT
+    rm -f $outFileName
+    cat $f | scala $package.$class > $outFileName
+    printf "Generated %s\n" $outFileName
+done
+
 if [[ $* == *p* ]]; then
-    cat $OUT
+    cat $outFileName
 else
     echo "Done"
 fi 
