@@ -4,10 +4,15 @@ import scala.io.Source._
 
 object RecycledNumbers {
   def main(args: Array[String]) {
-    stdin.getLines.zipWithIndex.drop(1).foreach{ 
-      case ((l: String, i: Int)) =>
-        println("Case #%d: %s".format(i, getRecycledNumbers(l)))
-    }
+    val lines = stdin.getLines
+    val perThread = lines.next.toInt / 7 + 1
+    lines.zipWithIndex.grouped(perThread).toArray.par.map{ 
+      chunk: Seq[(java.lang.String, Int)] =>
+        chunk.map {
+          case ((l: String, i: Int)) =>
+            (i+1, getRecycledNumbers(l))
+        }
+    }.toArray.sortWith(_(0)._1 < _(0)._1).flatten.foreach(t => println("Case #%d: %s".format(t._1, t._2)))
   }
 
   def getRecycledNumbers(l: String): Int = {
